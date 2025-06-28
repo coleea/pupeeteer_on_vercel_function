@@ -63,6 +63,9 @@ export default async (req: VercelRequest, res: VercelResponse) => {
     return e.innerHTML;
   });
 
+  console.debug('🐞bodyInnerHTML');
+  console.debug(bodyInnerHTML);
+  
   // const element = await performCanvasCapture(page, selector); // const element = page.$(selector)
   // const data = element;
 
