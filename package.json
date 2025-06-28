@@ -1,15 +1,10 @@
 {
   "name": "vercelgl",
   "version": "1.0.0",
-  "description": "",
   "engines": {
     "node": "22"
-  },
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "keywords": [],
-  "author": "Viki Val",
+  },  
+  "author": "Viki Val & modified by coleea",
   "license": "MIT",
   "dependencies": {
     "@sparticuz/chromium": "^132.0.0",
