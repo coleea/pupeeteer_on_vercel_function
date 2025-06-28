@@ -1,20 +1,23 @@
-```
+작동환경
 
-Error: Failed to launch the browser process!
-/tmp/chromium: error while loading shared libraries: libnss3.so: cannot open shared object file: No such file or directory
-
-
-TROUBLESHOOTING: https://pptr.dev/troubleshooting
-
-    at Interface.onClose (/var/task/node_modules/.pnpm/@puppeteer+browsers@1.9.0/node_modules/@puppeteer/browsers/lib/cjs/launch.js:277:24)
-    at Interface.emit (node:events:529:35)
-    at Interface.close (node:internal/readline/interface:534:10)
-    at Socket.onend (node:internal/readline/interface:260:10)
-    at Socket.emit (node:events:529:35)
-    at endReadableNT (node:internal/streams/readable:1400:12)
-    at process.processTicksAndRejections (node:internal/process/task_queues:82:21)
+- vercel의 node.js 버전 22.x
+- "puppeteer-core": "^24.5.0"
+- "@sparticuz/chromium": "^132.0.0",
+  - 버전을 137로 설정하면 아래 오류가 발생함
 
 ```
+Error [ERR_REQUIRE_ESM]: require() of ES Module /var/task/node_modules/.pnpm/@sparticuz+chromium@137.0.1/node_modules/@sparticuz/chromium/build/index.js from /var/task/api/screenshot.js not supported.
+Instead change the require of index.js in /var/task/api/screenshot.js to a dynamic import() which is available in all CommonJS modules.
+    at /opt/rust/nodejs.js:2:12456
+    at Function.Hr (/opt/rust/nodejs.js:2:12834)
+    at Ae.e.<computed>.Me._load (/opt/rust/nodejs.js:2:12426)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14) {
+  code: 'ERR_REQUIRE_ESM'
+}
+Node.js process exited with exit status: 1. The logs above can help with debugging the issue.
+
+```  
+
 
 
 ## VercelGL
