@@ -3,22 +3,6 @@ import puppeteer from "puppeteer-core";
 // const chrome = require("@sparticuz/chromium");
 // const puppeteer = require("puppeteer-core");
 
-// const performCanvasCapture = async (page: any, canvasSelector: string) => {
-//   try {
-//     // get the base64 image from the CANVAS targetted
-//     const base64 = await page.$eval(canvasSelector, (el) => {
-//       if (!el || el.tagName !== "CANVAS") return null;
-//       return el.toDataURL();
-//     });
-//     if (!base64) throw new Error("No canvas found");
-//     // remove the base64 mimetype at the beginning of the string
-//     const pureBase64 = base64.replace(/^data:image\/png;base64,/, "");
-//     return Buffer.from(pureBase64, "base64");
-//   } catch (err) {
-//     return null;
-//   }
-// };
-
 export default async (req: any, res: any) => {
   let {
     // query: { hash, path, resolution },
@@ -27,17 +11,8 @@ export default async (req: any, res: any) => {
   } = req;
 
   if (method !== "POST") {
-    // CORS https://vercel.com/guides/how-to-enable-cors    
-    res.setHeader("Access-Control-Allow-Credentials", true);
-    res.setHeader("Access-Control-Allow-Origin", "*");
-    res.setHeader(
-      "Access-Control-Allow-Methods",
-      "GET,OPTIONS,PATCH,DELETE,POST,PUT"
-    );
-    res.setHeader(
-      "Access-Control-Allow-Headers",
-      "X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version"
-    );
+    // CORS https://vercel.com/guides/how-to-enable-cors
+    setHeaderForGetRequest(res);
     return res.status(200).end();
   }
 
@@ -76,8 +51,6 @@ export default async (req: any, res: any) => {
 
   await page.goto(url);
 
-  const selector = "canvas";
-
   await page.waitForSelector("body");
   const bodyInnerHTML = await page.$eval("body", (e) => {
     return e.innerHTML;
@@ -91,8 +64,14 @@ export default async (req: any, res: any) => {
   await browser.close();
 
   // Set the s-maxage property which caches the images then on the Vercel edge
+  setHeaderForPostRequest(res);
+  res.end(data);
+};
+
+function setHeaderForPostRequest(res: any) {
   res.setHeader("Cache-Control", "s-maxage=10, stale-while-revalidate");
-  res.setHeader("Content-Type", "image/png");
+  // res.setHeader("Content-Type", "image/png");
+  res.setHeader("Content-Type", "text/plain");
   // CORS
   // res.setHeader('Access-Control-Allow-Headers', '*')
   res.setHeader("Access-Control-Allow-Credentials", true);
@@ -105,5 +84,17 @@ export default async (req: any, res: any) => {
     "Access-Control-Allow-Headers",
     "X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version"
   );
-  res.end(data);
-};
+}
+
+function setHeaderForGetRequest(res: any) {
+  res.setHeader("Access-Control-Allow-Credentials", true);
+  res.setHeader("Access-Control-Allow-Origin", "*");
+  res.setHeader(
+    "Access-Control-Allow-Methods",
+    "GET,OPTIONS,PATCH,DELETE,POST,PUT"
+  );
+  res.setHeader(
+    "Access-Control-Allow-Headers",
+    "X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version"
+  );
+}
