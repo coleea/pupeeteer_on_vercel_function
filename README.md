@@ -1,4 +1,22 @@
- 
+```
+
+Error: Failed to launch the browser process!
+/tmp/chromium: error while loading shared libraries: libnss3.so: cannot open shared object file: No such file or directory
+
+
+TROUBLESHOOTING: https://pptr.dev/troubleshooting
+
+    at Interface.onClose (/var/task/node_modules/.pnpm/@puppeteer+browsers@1.9.0/node_modules/@puppeteer/browsers/lib/cjs/launch.js:277:24)
+    at Interface.emit (node:events:529:35)
+    at Interface.close (node:internal/readline/interface:534:10)
+    at Socket.onend (node:internal/readline/interface:260:10)
+    at Socket.emit (node:events:529:35)
+    at endReadableNT (node:internal/streams/readable:1400:12)
+    at process.processTicksAndRejections (node:internal/process/task_queues:82:21)
+
+```
+
+
 ## VercelGL
 
 VercelGL is a simple, lightweight API to use serverless chrome.
