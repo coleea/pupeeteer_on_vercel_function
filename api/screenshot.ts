@@ -1,10 +1,11 @@
+import type { VercelRequest, VercelResponse } from "@vercel/node";
 import chrome from "@sparticuz/chromium";
 import puppeteer from "puppeteer-core";
 // const chrome = require("@sparticuz/chromium");
 // const puppeteer = require("puppeteer-core");
 
-export default async (req: any, res: any) => {
-  let {
+export default async (req: VercelRequest, res: VercelResponse) => {
+  const {
     // query: { hash, path, resolution },
     body,
     method,
@@ -21,37 +22,37 @@ export default async (req: any, res: any) => {
   if (typeof body === "object" && !body.url)
     return res.status(400).end(`No url provided`);
 
-  const isProd = process.env.NODE_ENV === "production";
+  // const isProduction = process.env.NODE_ENV === "production";
 
-  let browser;
+  const browser = await puppeteer.launch(
+    process.env.NODE_ENV === "production"
+      ? {
+          args: chrome.args,
+          defaultViewport: chrome.defaultViewport,
+          executablePath: await chrome.executablePath(),
+          headless: false,
+        }
+      : {
+          headless: false,
+        }
+  );
 
-  if (isProd) {
-    browser = await puppeteer.launch({
-      args: chrome.args,
-      defaultViewport: chrome.defaultViewport,
-      executablePath: await chrome.executablePath(),
-      headless: false,
-      // ignoreHTTPSErrors: true,
-    });
-  } else {
-    browser = await puppeteer.launch({
-      headless: false,
-      // executablePath: '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome',
-    });
-  }
-
-  const page = await browser.newPage();
+  const page = (await browser.pages()).at(0)!
+  // const page = await browser.newPage();
 
   await page.setViewport({ width: 600, height: 600 });
 
   // const url = getAbsoluteURL(`?hash=${hash}`, path)
-  const url = body.url;
+  // const url = req.body.url
 
-  console.log("url", url);
+  console.log("url", req.body.url);
 
-  await page.goto(url);
+  await page.goto(req.body.url, {
+    waitUntil : "domcontentloaded"
+  });
 
-  await page.waitForSelector("body");
+  // await page.waitForSelector("body");
+
   const bodyInnerHTML = await page.$eval("body", (e) => {
     return e.innerHTML;
   });
@@ -59,13 +60,14 @@ export default async (req: any, res: any) => {
   // const element = await performCanvasCapture(page, selector); // const element = page.$(selector)
   // const data = element;
 
-  const data = bodyInnerHTML;
+  // const data = bodyInnerHTML;
+
 
   await browser.close();
 
   // Set the s-maxage property which caches the images then on the Vercel edge
   setHeaderForPostRequest(res);
-  res.end(data);
+  res.end(bodyInnerHTML);
 };
 
 function setHeaderForPostRequest(res: any) {
