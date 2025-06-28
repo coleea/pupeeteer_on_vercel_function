@@ -3,6 +3,7 @@ import chrome from "@sparticuz/chromium";
 import puppeteer from "puppeteer-core";
 import { setHeaderForPostRequest } from "../utils/setHeaderForPostRequest";
 import { setHeaderForGetRequest } from "../utils/setHeaderForGetRequest";
+import { encode } from "punycode";
 
 // const chrome = require("@sparticuz/chromium");
 // const puppeteer = require("puppeteer-core");
@@ -52,7 +53,14 @@ export default async (req: VercelRequest, res: VercelResponse) => {
   console.debug("🐞req.body.query");
   console.debug(req.body.query);
 
-  const url = `https://duckduckgo.com/?q=!ducky+=site:namu.wiki ${req.body.query}`;
+  const query = req.body.query as string;
+  const url = `${encodeURI(
+    "https://duckduckgo.com/?q=!ducky+=site:namu.wiki"
+  )} ${encodeURI(query)}`;
+
+  console.debug("🐞url");
+  console.debug(url);
+
   await page.goto(url, {
     waitUntil: "domcontentloaded",
   });
@@ -63,9 +71,9 @@ export default async (req: VercelRequest, res: VercelResponse) => {
     return e.innerHTML;
   });
 
-  console.debug('🐞bodyInnerHTML');
+  console.debug("🐞bodyInnerHTML");
   console.debug(bodyInnerHTML);
-  
+
   // const element = await performCanvasCapture(page, selector); // const element = page.$(selector)
   // const data = element;
 
