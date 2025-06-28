@@ -1,7 +1,10 @@
 {
   "name": "vercelgl",
-  "version": "1.0.0",  
+  "version": "1.0.0",
   "description": "",
+  "engines": {
+    "node": "22"
+  },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -9,16 +12,11 @@
   "author": "Viki Val",
   "license": "MIT",
   "dependencies": {
-        "@sparticuz/chromium": "^132.0.0",
-        "puppeteer-core": "^24.5.0"
-
+    "@sparticuz/chromium": "^137.0.1",
+    "puppeteer-core": "^24.5.0"
   },
   "devDependencies": {
     "@types/node": "^22.11.2",
     "typescript": "^5.3.3"
-    
-  },
-  "engines": {
-    "node": "18"
   }
 }

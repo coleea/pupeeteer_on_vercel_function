@@ -76,7 +76,7 @@ export default async (req: any, res: any) => {
   } else {
     browser = await puppeteer.launch({
       headless: 'new',
-      executablePath: '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome',
+      // executablePath: '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome',
     })
   }
 

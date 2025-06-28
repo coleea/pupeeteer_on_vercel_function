@@ -8,9 +8,9 @@ importers:
 
   .:
     dependencies:
-      '@sparticuz/chromium-min':
-        specifier: ^132.0.0
-        version: 132.0.0
+      '@sparticuz/chromium':
+        specifier: ^137.0.1
+        version: 137.0.1
       puppeteer-core:
         specifier: ^24.5.0
         version: 24.11.0
@@ -29,9 +29,9 @@ packages:
     engines: {node: '>=18'}
     hasBin: true
 
-  '@sparticuz/chromium-min@132.0.0':
-    resolution: {integrity: sha512-Wqz6DK0fkXNrcQ/POablGRoip4NVPYoZ8yYPuipKTox6sRGzGKTdhgNHS4yK1UUPc47IfP7Wm8hTPxyXI5zgmg==}
-    engines: {node: '>= 16'}
+  '@sparticuz/chromium@137.0.1':
+    resolution: {integrity: sha512-9ixW23xjzIgSwBPLhWFOnrJNsnEw4dQWZqGzBCFGwGVuBPkNiJHO5VAGKezXj81J0wMYwP04tLlJFjsN5z4ROw==}
+    engines: {node: '>=20.11.0'}
 
   '@tootallnate/quickjs-emscripten@0.23.0':
     resolution: {integrity: sha512-C5Mc6rdnsaJDjO3UpGW/CQTHtCKaYlScZTly4JIu97Jxo/odCiH0ITnDXSJPTOrEKk/ycSZ0AOgTmkDtkOsvIA==}
@@ -373,7 +373,7 @@ snapshots:
       - bare-buffer
       - supports-color
 
-  '@sparticuz/chromium-min@132.0.0':
+  '@sparticuz/chromium@137.0.1':
     dependencies:
       follow-redirects: 1.15.9
       tar-fs: 3.0.10
