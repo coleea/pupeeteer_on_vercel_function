@@ -9,13 +9,12 @@
   "author": "Viki Val",
   "license": "MIT",
   "dependencies": {
-        "@sparticuz/chromium-min": "^133.0.0",
-
+        "@sparticuz/chromium-min": "^132.0.0",
         "puppeteer-core": "^24.5.0"
 
   },
   "devDependencies": {
-    "@types/node": "^20.10.6",
+    "@types/node": "^22.11.2",
     "typescript": "^5.3.3"
     
   },
