@@ -3,7 +3,6 @@ import chrome from "@sparticuz/chromium";
 import puppeteer from "puppeteer-core";
 import { setHeaderForPostRequest } from "../utils/setHeaderForPostRequest";
 import { setHeaderForGetRequest } from "../utils/setHeaderForGetRequest";
-import { encode } from "punycode";
 
 // const chrome = require("@sparticuz/chromium");
 // const puppeteer = require("puppeteer-core");
@@ -35,6 +34,7 @@ export default async (req: VercelRequest, res: VercelResponse) => {
           defaultViewport: chrome.defaultViewport,
           executablePath: await chrome.executablePath(),
           headless: false,
+          // args: ["--no-sandbox", "--disable-setuid-sandbox"],
         }
       : {
           headless: false,
@@ -53,10 +53,10 @@ export default async (req: VercelRequest, res: VercelResponse) => {
   console.debug("🐞req.body.query");
   console.debug(req.body.query);
 
+  // https://www.google.com/search?q=site%3Anamu.wiki&newwindow=1
+  // "https://duckduckgo.com/?q=!ducky+=site:namu.wiki"
   const query = req.body.query as string;
-  const url = `${encodeURI(
-    "https://duckduckgo.com/?q=!ducky+=site:namu.wiki"
-  )} ${encodeURI(query)}`;
+  const url = `${encodeURI("https://www.google.com/search?q=site%3Anamu.wiki+")}${encodeURI(query)}`;
 
   console.debug("🐞url");
   console.debug(url);
@@ -65,7 +65,18 @@ export default async (req: VercelRequest, res: VercelResponse) => {
     waitUntil: "domcontentloaded",
   });
 
-  // await page.waitForSelector("body");
+  const targetUrl = await page.$eval("#search div[data-rpos] a", e => {
+    return e.href
+  })
+
+  
+  await page.goto(targetUrl, {
+    waitUntil: "domcontentloaded",
+  });
+  
+  // document.querySelector(`#search div[data-rpos] a`).click();
+
+  // await page.waitForSelector("body");{}
 
   const bodyInnerHTML = await page.$eval("body", (e) => {
     return e.innerHTML;
