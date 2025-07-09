@@ -8,14 +8,15 @@ export async function getChrome() {
   //   console.debug("🐞process.env.VERCEL_ENV");
   //   console.debug(process.env.VERCEL_ENV);
 
+  puppeteerExtra.use(puppeteerExtraPluginStealth());
+
   // vercel dev 로컬 환경
   if (process.env.VERCEL_REGION?.includes("dev")) {
     console.log("Running in local (vercel dev) environment");
-	puppeteerExtra.use(puppeteerExtraPluginStealth())
     return {
       executablePath: puppeteer.executablePath(), // puppeteer가 번들로 제공하는 Chromium 경로
-	  puppeteer: puppeteerExtra,
-    //   puppeteer: puppeteer, // 풀 버전 puppeteer 사용
+      puppeteer: puppeteerExtra,
+      //   puppeteer: puppeteer, // 풀 버전 puppeteer 사용
     };
   }
 
@@ -25,7 +26,7 @@ export async function getChrome() {
 
   return {
     executablePath,
-	puppeteer : puppeteerExtra
+    puppeteer: puppeteerExtra,
     // puppeteer: puppeteerCore, // 가벼운 puppeteer-core 사용
   };
 }
