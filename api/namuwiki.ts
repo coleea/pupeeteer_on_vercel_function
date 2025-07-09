@@ -35,6 +35,7 @@ export default async (req: VercelRequest, res: VercelResponse) => {
           executablePath: await chrome.executablePath(),
           headless: false,
           // args: ["--no-sandbox", "--disable-setuid-sandbox"],
+          
         }
       : {
           headless: false,
@@ -44,6 +45,8 @@ export default async (req: VercelRequest, res: VercelResponse) => {
   const page = (await browser.pages()).at(0)!;
   // const page = await browser.newPage();
 
+  await page.setJavaScriptEnabled(true) ;
+  
   await page.setViewport({ width: 600, height: 600 });
 
   // const url = getAbsoluteURL(`?hash=${hash}`, path)
