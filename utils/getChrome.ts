@@ -21,8 +21,8 @@ require("puppeteer-extra-plugin-stealth/evasions/user-agent-override");
 require("puppeteer-extra-plugin-stealth/evasions/webgl.vendor");
 require("puppeteer-extra-plugin-stealth/evasions/window.outerdimensions");
 require("puppeteer-extra-plugin-stealth/evasions/defaultArgs");
-// require("puppeteer-extra-plugin-user-preferences");
-// require("puppeteer-extra-plugin-user-data-dir");
+require("puppeteer-extra-plugin-user-preferences");
+require("puppeteer-extra-plugin-user-data-dir");
 
 export async function getChrome() {
   //   console.debug("🐞process.env.VERCEL_ENV");
