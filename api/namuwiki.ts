@@ -56,7 +56,9 @@ export default async (req: VercelRequest, res: VercelResponse) => {
   // https://www.google.com/search?q=site%3Anamu.wiki&newwindow=1
   // "https://duckduckgo.com/?q=!ducky+=site:namu.wiki"
   const query = req.body.query as string;
-  const url = `${encodeURI("https://www.google.com/search?q=site%3Anamu.wiki+")}${encodeURI(query)}`;
+  const url = `${encodeURI(
+    "https://www.google.com/search?q=site%3Anamu.wiki+"
+  )}${encodeURI(query)}`;
 
   console.debug("🐞url");
   console.debug(url);
@@ -65,15 +67,22 @@ export default async (req: VercelRequest, res: VercelResponse) => {
     waitUntil: "domcontentloaded",
   });
 
-  const targetUrl = await page.$eval("#search div[data-rpos] a", e => {
-    return e.href
-  })
+  const bodyInnerHTMLGoogle = await page.$eval("body", (e) => {
+    return e.innerHTML;
+  });
 
-  
+  console.debug("🐞bodyInnerHTMLGoogle");
+  console.debug(bodyInnerHTMLGoogle);
+
+  // const targetUrl = await page.$eval("#search div[data-rpos] a", (e) => {
+  const targetUrl = await page.$eval("#search a", (e) => {
+    return e.href;
+  });
+
   await page.goto(targetUrl, {
     waitUntil: "domcontentloaded",
   });
-  
+
   // document.querySelector(`#search div[data-rpos] a`).click();
 
   // await page.waitForSelector("body");{}
