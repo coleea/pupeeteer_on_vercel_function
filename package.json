@@ -4,6 +4,7 @@
   "engines": {
     "node": "22"
   },
+  "packageManager": "pnpm@10.11.0",
   "author": "Viki Val & modified by coleea",
   "license": "MIT",
   "dependencies": {

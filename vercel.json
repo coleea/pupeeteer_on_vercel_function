@@ -1,4 +1,6 @@
 {
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+
   "headers": [
     {
       "source": "/api/(.*)",
@@ -15,16 +17,5 @@
         }
       ]
     }
-  ],
-  "builds": [
-    {
-      "src": "api/**/*.ts",
-      "use": "@vercel/node",
-      "config": {
-        "includeFiles": [
-          "node_modules/puppeteer-extra-plugin-stealth/evasions/**"
-        ]
-      }
-    }
-  ]
+  ]  
 }
