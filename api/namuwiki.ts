@@ -27,7 +27,7 @@ export default async (req: VercelRequest, res: VercelResponse) => {
           args: chrome.args,
           defaultViewport: chrome.defaultViewport,
           executablePath,
-          headless: true,
+          headless: false,
           // args: ["--no-sandbox", "--disable-setuid-sandbox"],
         }
       : {
