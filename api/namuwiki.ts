@@ -9,6 +9,8 @@ import { argsBySparticuz } from "../utils/argsBySparticuz";
 
 // import { getChrome } from "../utils/getChrome.backup.2";
 
+const BRAVE_API_KEY = "BSAfF9d5o5VYSiYDsTjIiKoLfogH9cq"
+
 export default async (req: VercelRequest, res: VercelResponse) => {
   const { body, method } = req;
 
@@ -75,50 +77,18 @@ export default async (req: VercelRequest, res: VercelResponse) => {
 
   // https://www.google.com/search?q=site%3Anamu.wiki&newwindow=1
   const query = req.body.query as string;
-  const url = `${encodeURI(
-    // "https://duckduckgo.com/?q=site%3Anamu.wiki+"
-    // "https://www.google.com/search?q=site:namu.wiki+"
-    "https://www.bing.com/search?q=site:namu.wiki "
-  )}${encodeURI(query)}`;
 
-  console.debug("🐞url");
-  console.debug(url);
+   const resultsString = await performWebSearch(query)
+   const foundUrlStr = resultsString.split('\n').find(line => line.startsWith("URL: "))
+   if(foundUrlStr == null ) {
+    setHeaderForPostRequest(res);
+  res.end("foundUrlStr == null")
+    return 
+   }
+const foundUrlStrFormatted = foundUrlStr.replace('URL: ', '')
 
-  // await new Promise((r) => setTimeout(r, 2000));
 
-  // new Error('Navigating frame was detached'),
-  await page.goto(url, {
-    waitUntil: "domcontentloaded",
-    // waitUntil: "",
-  });
-
-  // await new Promise((r) => setTimeout(r, 500000));
-
-  // await page.$eval()
-  // console.debug("🐞before eval");
-  // const bodyInnerHTMLGoogle = await page.$eval("body", (e) => {
-  //   return e.innerHTML;
-  // });
-  // console.debug("🐞after eval");
-
-  // console.debug("🐞bodyInnerHTMLGoogle");
-  // console.debug(bodyInnerHTMLGoogle);
-
-  const targetUrl = await page.$eval(
-    // "#search a"
-    "h2 a",
-    // ".react-results--main li article h2 a",
-    (e) => {
-      return e.href;
-    }
-  );
-
-  // await new Promise((r) => setTimeout(r, 2000));
-
-  console.debug('🐞targetUrl');
-  console.debug(targetUrl);
-  console.debug('🐞1');
-  await page2.goto(targetUrl, {
+await page2.goto(foundUrlStrFormatted, {
     waitUntil: "load",
   });
   console.debug('🐞2');
@@ -137,8 +107,8 @@ export default async (req: VercelRequest, res: VercelResponse) => {
 
   // await new Promise((r) => setTimeout(r, 1000));
 
-  console.debug("🐞bodyInnerHTML");
-  console.debug(bodyInnerHTML);
+  // console.debug("🐞bodyInnerHTML");
+  // console.debug(bodyInnerHTML);
 
   
   await page.close();
@@ -147,6 +117,183 @@ export default async (req: VercelRequest, res: VercelResponse) => {
   // await new Promise((r) => setTimeout(r, 1000));
 
   setHeaderForPostRequest(res);
-  res.end(bodyInnerHTML);
+  res.end(bodyInnerHTML)
+
+
+// console.debug('🐞resultsString');
+// console.debug(resultsString);
+
+//   const url = `${encodeURI(
+//     // "https://duckduckgo.com/?q=site%3Anamu.wiki+"
+//     // "https://www.google.com/search?q=site:namu.wiki+"
+//     "https://www.bing.com/search?q=site:namu.wiki "
+//   )}${encodeURI(query)}`;
+
+//   console.debug("🐞url");
+//   console.debug(url);
+
+//   // await new Promise((r) => setTimeout(r, 2000));
+
+//   // new Error('Navigating frame was detached'),
+//   await page.goto(url, {
+//     waitUntil: "domcontentloaded",
+//     // waitUntil: "",
+//   });
+
+//   // await new Promise((r) => setTimeout(r, 500000));
+
+//   // await page.$eval()
+//   // console.debug("🐞before eval");
+//   // const bodyInnerHTMLGoogle = await page.$eval("body", (e) => {
+//   //   return e.innerHTML;
+//   // });
+//   // console.debug("🐞after eval");
+
+//   // console.debug("🐞bodyInnerHTMLGoogle");
+//   // console.debug(bodyInnerHTMLGoogle);
+
+//   const targetUrl = await page.$eval(
+//     // "#search a"
+//     "h2 a",
+//     // ".react-results--main li article h2 a",
+//     (e) => {
+//       return e.href;
+//     }
+//   );
+
+//   // await new Promise((r) => setTimeout(r, 2000));
+
+//   console.debug('🐞targetUrl');
+//   console.debug(targetUrl);
+//   console.debug('🐞1');
+//   await page2.goto(targetUrl, {
+//     waitUntil: "load",
+//   });
+//   console.debug('🐞2');
+
+//   // await new Promise((r) => setTimeout(r, 3000));
+
+//   // await new Promise((r) => setTimeout(r, 3000));
+
+//   console.debug('🐞3');
+
+//   const bodyInnerHTML = await page2.$eval("body", (e) => {
+//     return e.innerHTML;
+//   });
+
+//   console.debug('🐞4');
+
+//   // await new Promise((r) => setTimeout(r, 1000));
+
+//   // console.debug("🐞bodyInnerHTML");
+//   // console.debug(bodyInnerHTML);
+
+  
+//   await page.close();
+//   await browser.close();
+
+//   // await new Promise((r) => setTimeout(r, 1000));
+
+//   setHeaderForPostRequest(res);
+//   res.end(bodyInnerHTML);
 };
 
+
+
+
+
+async function performWebSearch(query: string, count: number = 10, offset: number = 0) {
+  // checkRateLimit();
+  const url = new URL('https://api.search.brave.com/res/v1/web/search');
+  url.searchParams.set('q', query);
+  url.searchParams.set('count', count.toString()); // API limit
+  url.searchParams.set('offset', offset.toString());
+
+  const response = await fetch(url, {
+    headers: {
+      'Accept': 'application/json',
+      'Accept-Encoding': 'gzip',
+      'X-Subscription-Token': BRAVE_API_KEY
+    }
+  });
+
+  if (!response.ok) {
+    throw new Error(`Brave API error: ${response.status} ${response.statusText}\n${await response.text()}`);
+  }
+
+  const data = await response.json() as BraveWeb;
+
+  // Extract just web results
+  const results = (data.web?.results || []).map(result => ({
+    title: result.title || '',
+    description: result.description || '',
+    url: result.url || ''
+  }));
+
+  return results.map(r =>
+    `Title: ${r.title}\nDescription: ${r.description}\nURL: ${r.url}`
+  ).join('\n\n');
+}
+
+// function checkRateLimit() {
+//   const now = Date.now();
+//   if (now - requestCount.lastReset > 1000) {
+//     requestCount.second = 0;
+//     requestCount.lastReset = now;
+//   }
+//   if (requestCount.second >= RATE_LIMIT.perSecond ||
+//     requestCount.month >= RATE_LIMIT.perMonth) {
+//     throw new Error('Rate limit exceeded');
+//   }
+//   requestCount.second++;
+//   requestCount.month++;
+// }
+
+interface BraveWeb {
+  web?: {
+    results?: Array<{
+      title: string;
+      description: string;
+      url: string;
+      language?: string;
+      published?: string;
+      rank?: number;
+    }>;
+  };
+  locations?: {
+    results?: Array<{
+      id: string; // Required by API
+      title?: string;
+    }>;
+  };
+}
+
+interface BraveLocation {
+  id: string;
+  name: string;
+  address: {
+    streetAddress?: string;
+    addressLocality?: string;
+    addressRegion?: string;
+    postalCode?: string;
+  };
+  coordinates?: {
+    latitude: number;
+    longitude: number;
+  };
+  phone?: string;
+  rating?: {
+    ratingValue?: number;
+    ratingCount?: number;
+  };
+  openingHours?: string[];
+  priceRange?: string;
+}
+
+interface BravePoiResponse {
+  results: BraveLocation[];
+}
+
+interface BraveDescription {
+  descriptions: {[id: string]: string};
+}
