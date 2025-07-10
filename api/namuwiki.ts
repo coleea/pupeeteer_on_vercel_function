@@ -2,14 +2,14 @@ import type { VercelRequest, VercelResponse } from "@vercel/node";
 import chrome from "@sparticuz/chromium";
 import { setHeaderForPostRequest } from "../utils/setHeaderForPostRequest";
 import { setHeaderForGetRequest } from "../utils/setHeaderForGetRequest";
-// import { getChrome } from "../utils/getChrome.backup.2";
 import "dotenv/config";
 import { getChrome } from "../utils/getChrome";
+// import { getChrome } from "../utils/getChrome.backup.2";
 
 export default async (req: VercelRequest, res: VercelResponse) => {
   const { body, method } = req;
 
-  const isDev = process.env.VERCEL_REGION?.includes("dev");
+  const isDev = process.env.VERCEL_REGION?.includes("dev") ? true : false ;
 
   console.debug("🐞isDev");
   console.debug(isDev);
@@ -32,10 +32,15 @@ export default async (req: VercelRequest, res: VercelResponse) => {
   const browser = await puppeteer.launch(
     isDev
       ? {
+          // args: chrome.args,
+          // args: chrome.args,
+          defaultViewport: chrome.defaultViewport,
+          executablePath,
+
           headless: false,
         }
       : {
-          args: chrome.args,
+          // args: chrome.args,
           defaultViewport: chrome.defaultViewport,
           executablePath,
           headless: false,
