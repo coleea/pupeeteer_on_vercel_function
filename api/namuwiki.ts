@@ -55,7 +55,8 @@ export default async (req: VercelRequest, res: VercelResponse) => {
   // https://www.google.com/search?q=site%3Anamu.wiki&newwindow=1
   const query = req.body.query as string;
   const url = `${encodeURI(
-    "https://www.google.com/search?q=site:namu.wiki+"
+    "https://duckduckgo.com/?q=site%3Anamu.wiki+"
+    // "https://www.google.com/search?q=site:namu.wiki+"
   )}${encodeURI(query)}`;
 
   console.debug("🐞url");
@@ -77,7 +78,10 @@ export default async (req: VercelRequest, res: VercelResponse) => {
   console.debug("🐞bodyInnerHTMLGoogle");
   console.debug(bodyInnerHTMLGoogle);
 
-  const targetUrl = await page.$eval("#search a", (e) => {
+  const targetUrl = await page.$eval(
+    // "#search a"
+    ".react-results--main li article h2 a"
+    , (e) => {
     return e.href;
   });
 
