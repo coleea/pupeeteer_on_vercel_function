@@ -2,12 +2,17 @@ import type { VercelRequest, VercelResponse } from "@vercel/node";
 import chrome from "@sparticuz/chromium";
 import { setHeaderForPostRequest } from "../utils/setHeaderForPostRequest";
 import { setHeaderForGetRequest } from "../utils/setHeaderForGetRequest";
-import { getChrome } from "../utils/getChrome";
+// import { getChrome } from "../utils/getChrome.backup.2";
 import "dotenv/config";
+import { getChrome } from "../utils/getChrome";
 
 export default async (req: VercelRequest, res: VercelResponse) => {
   const { body, method } = req;
 
+  const isDev = process.env.VERCEL_REGION?.includes("dev");
+
+  console.debug("🐞isDev");
+  console.debug(isDev);
   if (method !== "POST") {
     // CORS https://vercel.com/guides/how-to-enable-cors
     setHeaderForGetRequest(res);
@@ -19,19 +24,22 @@ export default async (req: VercelRequest, res: VercelResponse) => {
   if (typeof body === "object" && !body.url)
     return res.status(400).end(`No url provided`);
 
-  const { executablePath, puppeteer } = await getChrome();
+  const { executablePath, puppeteer } = await getChrome({isDev});
+
+  console.debug("🐞process.env.NODE_ENV");
+  console.debug(process.env.NODE_ENV);
 
   const browser = await puppeteer.launch(
-    process.env.NODE_ENV === "production"
+    isDev
       ? {
+          headless: false,
+        }
+      : {
           args: chrome.args,
           defaultViewport: chrome.defaultViewport,
           executablePath,
           headless: false,
           // args: ["--no-sandbox", "--disable-setuid-sandbox"],
-        }
-      : {
-          headless: false,
         }
   );
 
@@ -55,16 +63,16 @@ export default async (req: VercelRequest, res: VercelResponse) => {
   // await new Promise((r) => setTimeout(r, 500000));
 
   // await page.$eval()
-  console.debug('🐞before eval');
-  const bodyInnerHTMLGoogle = await page.$eval("body", (e ) => {
+  console.debug("🐞before eval");
+  const bodyInnerHTMLGoogle = await page.$eval("body", (e) => {
     return e.innerHTML;
   });
-  console.debug('🐞after eval');
+  console.debug("🐞after eval");
 
   console.debug("🐞bodyInnerHTMLGoogle");
   console.debug(bodyInnerHTMLGoogle);
 
-  const targetUrl = await page.$eval("#search a", (e ) => {
+  const targetUrl = await page.$eval("#search a", (e) => {
     return e.href;
   });
 
