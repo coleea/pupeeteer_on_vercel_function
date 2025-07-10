@@ -58,6 +58,7 @@ export default async (req: VercelRequest, res: VercelResponse) => {
         }
   );
 
+  const page2 = await browser.newPage()
   // const { page } = browser;
   const page = (await browser.pages()).at(0)!;
 
@@ -88,6 +89,7 @@ export default async (req: VercelRequest, res: VercelResponse) => {
   // new Error('Navigating frame was detached'),
   await page.goto(url, {
     waitUntil: "domcontentloaded",
+    // waitUntil: "",
   });
 
   // await new Promise((r) => setTimeout(r, 500000));
@@ -113,19 +115,27 @@ export default async (req: VercelRequest, res: VercelResponse) => {
 
   // await new Promise((r) => setTimeout(r, 2000));
 
-  await page.goto(targetUrl, {
+  console.debug('🐞targetUrl');
+  console.debug(targetUrl);
+  console.debug('🐞1');
+  await page2.goto(targetUrl, {
     waitUntil: "load",
   });
+  console.debug('🐞2');
 
   // await new Promise((r) => setTimeout(r, 3000));
 
   // await new Promise((r) => setTimeout(r, 3000));
 
-  const bodyInnerHTML = await page.$eval("body", (e) => {
+  console.debug('🐞3');
+
+  const bodyInnerHTML = await page2.$eval("body", (e) => {
     return e.innerHTML;
   });
 
-  await new Promise((r) => setTimeout(r, 1000));
+  console.debug('🐞4');
+
+  // await new Promise((r) => setTimeout(r, 1000));
 
   console.debug("🐞bodyInnerHTML");
   console.debug(bodyInnerHTML);
@@ -134,7 +144,7 @@ export default async (req: VercelRequest, res: VercelResponse) => {
   await page.close();
   await browser.close();
 
-  await new Promise((r) => setTimeout(r, 1000));
+  // await new Promise((r) => setTimeout(r, 1000));
 
   setHeaderForPostRequest(res);
   res.end(bodyInnerHTML);
