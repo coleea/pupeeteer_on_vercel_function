@@ -40,7 +40,7 @@ export default async (req: VercelRequest, res: VercelResponse) => {
           headless: false,
         }
       : {
-          // args: chrome.args,
+          args: chrome.args,
           defaultViewport: chrome.defaultViewport,
           executablePath,
           headless: false,
