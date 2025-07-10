@@ -4,7 +4,7 @@ import { setHeaderForPostRequest } from "../utils/setHeaderForPostRequest";
 import { setHeaderForGetRequest } from "../utils/setHeaderForGetRequest";
 import "dotenv/config";
 import { getChrome } from "../utils/getChrome";
-import { connect } from "puppeteer-real-browser";
+// import { connect } from "puppeteer-real-browser";
 
 // import { getChrome } from "../utils/getChrome.backup.2";
 
@@ -31,40 +31,49 @@ export default async (req: VercelRequest, res: VercelResponse) => {
   console.debug("🐞process.env.NODE_ENV");
   console.debug(process.env.NODE_ENV);
 
-  const browser = await connect({
-    headless: false,
-    turnstile: true,
-  });
+  // ChromePathNotSetError
+  // const browser = await connect({
+  //   headless: false,
+  //   turnstile: true,
 
-  // const browser = await puppeteer.launch(
-  //   isDev
-  //     ? {
-  //         // args: chrome.args,
-  //         // args: chrome.args,
-  //         defaultViewport: chrome.defaultViewport,
-  //         executablePath,
+  // });
 
-  //         headless: false,
-  //       }
-  //     : {
-  //         args: chrome.args,
-  //         defaultViewport: chrome.defaultViewport,
-  //         executablePath,
-  //         headless: false,
-  //         // args: ["--no-sandbox", "--disable-setuid-sandbox"],
-  //       }
-  // );
+  const browser = await puppeteer.launch(
+    isDev
+      ? {
+          // args: chrome.args,
+          // args: chrome.args,
+          defaultViewport: chrome.defaultViewport,
+          executablePath,
 
-  const { page } = browser;
-  // const page = (await browser.pages()).at(0)!;
+          headless: false,
+        }
+      : {
+          args: chrome.args,
+          defaultViewport: chrome.defaultViewport,
+          executablePath,
+          headless: false,
+          // args: ["--no-sandbox", "--disable-setuid-sandbox"],
+        }
+  );
+
+  // const { page } = browser;
+  const page = (await browser.pages()).at(0)!;
+
+  await page.setViewport({ width: 1920, height: 1080 });
+
+  await page.setUserAgent(
+    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Safari/537.36"
+  );
+
   await page.setJavaScriptEnabled(true);
-  await page.setViewport({ width: 600, height: 600 });
+  // await page.setViewport({ width: 600, height: 600 });
 
   // https://www.google.com/search?q=site%3Anamu.wiki&newwindow=1
   const query = req.body.query as string;
   const url = `${encodeURI(
-    "https://duckduckgo.com/?q=site%3Anamu.wiki+"
-    // "https://www.google.com/search?q=site:namu.wiki+"
+    // "https://duckduckgo.com/?q=site%3Anamu.wiki+"
+    "https://www.google.com/search?q=site:namu.wiki+"
   )}${encodeURI(query)}`;
 
   console.debug("🐞url");
