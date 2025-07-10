@@ -4,12 +4,14 @@ import { setHeaderForPostRequest } from "../utils/setHeaderForPostRequest";
 import { setHeaderForGetRequest } from "../utils/setHeaderForGetRequest";
 import "dotenv/config";
 import { getChrome } from "../utils/getChrome";
+import { connect } from "puppeteer-real-browser";
+
 // import { getChrome } from "../utils/getChrome.backup.2";
 
 export default async (req: VercelRequest, res: VercelResponse) => {
   const { body, method } = req;
 
-  const isDev = process.env.VERCEL_REGION?.includes("dev") ? true : false ;
+  const isDev = process.env.VERCEL_REGION?.includes("dev") ? true : false;
 
   console.debug("🐞isDev");
   console.debug(isDev);
@@ -24,31 +26,37 @@ export default async (req: VercelRequest, res: VercelResponse) => {
   if (typeof body === "object" && !body.url)
     return res.status(400).end(`No url provided`);
 
-  const { executablePath, puppeteer } = await getChrome({isDev});
+  const { executablePath, puppeteer } = await getChrome({ isDev });
 
   console.debug("🐞process.env.NODE_ENV");
   console.debug(process.env.NODE_ENV);
 
-  const browser = await puppeteer.launch(
-    isDev
-      ? {
-          // args: chrome.args,
-          // args: chrome.args,
-          defaultViewport: chrome.defaultViewport,
-          executablePath,
+  const browser = await connect({
+    headless: false,
+    turnstile: true,
+  });
 
-          headless: false,
-        }
-      : {
-          args: chrome.args,
-          defaultViewport: chrome.defaultViewport,
-          executablePath,
-          headless: false,
-          // args: ["--no-sandbox", "--disable-setuid-sandbox"],
-        }
-  );
+  // const browser = await puppeteer.launch(
+  //   isDev
+  //     ? {
+  //         // args: chrome.args,
+  //         // args: chrome.args,
+  //         defaultViewport: chrome.defaultViewport,
+  //         executablePath,
 
-  const page = (await browser.pages()).at(0)!;
+  //         headless: false,
+  //       }
+  //     : {
+  //         args: chrome.args,
+  //         defaultViewport: chrome.defaultViewport,
+  //         executablePath,
+  //         headless: false,
+  //         // args: ["--no-sandbox", "--disable-setuid-sandbox"],
+  //       }
+  // );
+
+  const { page } = browser;
+  // const page = (await browser.pages()).at(0)!;
   await page.setJavaScriptEnabled(true);
   await page.setViewport({ width: 600, height: 600 });
 
@@ -80,10 +88,11 @@ export default async (req: VercelRequest, res: VercelResponse) => {
 
   const targetUrl = await page.$eval(
     // "#search a"
-    ".react-results--main li article h2 a"
-    , (e) => {
-    return e.href;
-  });
+    ".react-results--main li article h2 a",
+    (e) => {
+      return e.href;
+    }
+  );
 
   await page.goto(targetUrl, {
     waitUntil: "domcontentloaded",

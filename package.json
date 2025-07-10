@@ -23,6 +23,7 @@
     "@types/node": "^22.11.2",
     "playwright": "^1.53.2",
     "puppeteer": "^24.12.0",
+    "puppeteer-real-browser": "^1.4.2",
     "rebrowser-puppeteer": "^24.8.1",
     "typescript": "^5.8.3"
   }
