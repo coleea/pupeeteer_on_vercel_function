@@ -4,6 +4,7 @@ import { setHeaderForPostRequest } from "../utils/setHeaderForPostRequest";
 import { setHeaderForGetRequest } from "../utils/setHeaderForGetRequest";
 import "dotenv/config";
 import { getChrome } from "../utils/getChrome";
+import { argsBySparticuz } from "../utils/argsBySparticuz";
 // import { connect } from "puppeteer-real-browser";
 
 // import { getChrome } from "../utils/getChrome.backup.2";
@@ -41,7 +42,7 @@ export default async (req: VercelRequest, res: VercelResponse) => {
   const browser = await puppeteer.launch(
     isDev
       ? {
-          // args: chrome.args,
+          // args: argsBySparticuz(),
           // args: chrome.args,
           defaultViewport: chrome.defaultViewport,
           executablePath,
@@ -69,16 +70,22 @@ export default async (req: VercelRequest, res: VercelResponse) => {
   await page.setJavaScriptEnabled(true);
   // await page.setViewport({ width: 600, height: 600 });
 
+  
+
   // https://www.google.com/search?q=site%3Anamu.wiki&newwindow=1
   const query = req.body.query as string;
   const url = `${encodeURI(
     // "https://duckduckgo.com/?q=site%3Anamu.wiki+"
-    "https://www.google.com/search?q=site:namu.wiki+"
+    // "https://www.google.com/search?q=site:namu.wiki+"
+    "https://www.bing.com/search?q=site:namu.wiki "
   )}${encodeURI(query)}`;
 
   console.debug("🐞url");
   console.debug(url);
 
+  // await new Promise((r) => setTimeout(r, 2000));
+
+  // new Error('Navigating frame was detached'),
   await page.goto(url, {
     waitUntil: "domcontentloaded",
   });
@@ -86,36 +93,50 @@ export default async (req: VercelRequest, res: VercelResponse) => {
   // await new Promise((r) => setTimeout(r, 500000));
 
   // await page.$eval()
-  console.debug("🐞before eval");
-  const bodyInnerHTMLGoogle = await page.$eval("body", (e) => {
-    return e.innerHTML;
-  });
-  console.debug("🐞after eval");
+  // console.debug("🐞before eval");
+  // const bodyInnerHTMLGoogle = await page.$eval("body", (e) => {
+  //   return e.innerHTML;
+  // });
+  // console.debug("🐞after eval");
 
-  console.debug("🐞bodyInnerHTMLGoogle");
-  console.debug(bodyInnerHTMLGoogle);
+  // console.debug("🐞bodyInnerHTMLGoogle");
+  // console.debug(bodyInnerHTMLGoogle);
 
   const targetUrl = await page.$eval(
     // "#search a"
-    ".react-results--main li article h2 a",
+    "h2 a",
+    // ".react-results--main li article h2 a",
     (e) => {
       return e.href;
     }
   );
 
+  // await new Promise((r) => setTimeout(r, 2000));
+
   await page.goto(targetUrl, {
-    waitUntil: "domcontentloaded",
+    waitUntil: "load",
   });
+
+  // await new Promise((r) => setTimeout(r, 3000));
+
+  // await new Promise((r) => setTimeout(r, 3000));
 
   const bodyInnerHTML = await page.$eval("body", (e) => {
     return e.innerHTML;
   });
 
+  await new Promise((r) => setTimeout(r, 1000));
+
   console.debug("🐞bodyInnerHTML");
   console.debug(bodyInnerHTML);
 
+  
+  await page.close();
   await browser.close();
+
+  await new Promise((r) => setTimeout(r, 1000));
 
   setHeaderForPostRequest(res);
   res.end(bodyInnerHTML);
 };
+

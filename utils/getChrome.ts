@@ -5,8 +5,8 @@ import puppeteer from "puppeteer";
 import puppeteerExtra from "puppeteer-extra";
 import puppeteerExtraPluginStealth from "puppeteer-extra-plugin-stealth";
 
-import puppeteerRebrowser from "rebrowser-puppeteer";
-import puppeteerCoreRebrowser from "rebrowser-puppeteer-core";
+// import puppeteerRebrowser from "rebrowser-puppeteer";
+// import puppeteerCoreRebrowser from "rebrowser-puppeteer-core";
 
 
 // import { addExtra } from 'puppeteer-extra'
