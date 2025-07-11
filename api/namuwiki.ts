@@ -6,7 +6,6 @@ import "dotenv/config";
 import { getChrome } from "../utils/getChrome";
 import { argsBySparticuz } from "../utils/argsBySparticuz";
 // import { connect } from "puppeteer-real-browser";
-
 // import { getChrome } from "../utils/getChrome.backup.2";
 
 const BRAVE_API_KEY = "BSAfF9d5o5VYSiYDsTjIiKoLfogH9cq";

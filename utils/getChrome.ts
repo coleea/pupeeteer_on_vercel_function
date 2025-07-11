@@ -54,8 +54,10 @@ export async function getChrome({ isDev }: { isDev: boolean }) {
     ? puppeteer.executablePath()
     : await chromium.executablePath();
   const pptr = isDev ? puppeteerExtra : puppeteerExtra;
-  pptr.connect({ browserWSEndpoint: SBR_WS_ENDPOINT });
-  
+  // pptr.connect({ 
+    // browserWSEndpoint: SBR_WS_ENDPOINT
+  //  });
+
   return {
     executablePath: executablePath, // puppeteer가 번들로 제공하는 Chromium 경로
     puppeteer: pptr,
