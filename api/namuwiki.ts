@@ -30,6 +30,14 @@ export default async (req: VercelRequest, res: VercelResponse) => {
 
   const { executablePath, puppeteer } = await getChrome({ isDev });
 
+  const SBR_WS_ENDPOINT =
+  "wss://brd-customer-hl_29ef282b-zone-scraping_browser1:uow2t82dtevb@brd.superproxy.io:9222";
+
+  const browser = await puppeteer.connect({
+    browserWSEndpoint: SBR_WS_ENDPOINT,
+  });
+
+
   console.debug("🐞process.env.NODE_ENV");
   console.debug(process.env.NODE_ENV);
 
@@ -41,28 +49,33 @@ export default async (req: VercelRequest, res: VercelResponse) => {
   // });
 
   // puppeteer
-  const browser = await puppeteer.launch(
-    isDev
-      ? {
-          // args: argsBySparticuz(),
-          // args: chrome.args,
-          defaultViewport: chrome.defaultViewport,
-          executablePath,
+  // const browser = await puppeteer.launch(
+  //   isDev
+  //     ? {
+  //         // args: argsBySparticuz(),
+  //         // args: chrome.args,
+  //         defaultViewport: chrome.defaultViewport,
+  //         executablePath,
 
-          headless: false,
-        }
-      : {
-          args: chrome.args,
-          defaultViewport: chrome.defaultViewport,
-          executablePath,
-          headless: false,
-          // args: ["--no-sandbox", "--disable-setuid-sandbox"],
-        }
-  );
+  //         headless: false,
+  //       }
+  //     : {
+  //         args: chrome.args,
+  //         defaultViewport: chrome.defaultViewport,
+  //         executablePath,
+  //         headless: false,
+  //         // args: ["--no-sandbox", "--disable-setuid-sandbox"],
+  //       }
+  // );
 
-  const page2 = await browser.newPage();
+  // const page2 = await browser.newPage();
   // const { page } = browser;
-  const page = (await browser.pages()).at(0)!;
+
+  const page = await browser.newPage()
+
+  console.debug('🐞page');
+  console.debug(page);
+  // const page = (await browser.pages()).at(0)!;
 
   await page.setViewport({ width: 1920, height: 1080 });
 
@@ -76,16 +89,16 @@ export default async (req: VercelRequest, res: VercelResponse) => {
   // https://www.google.com/search?q=site%3Anamu.wiki&newwindow=1
   const query = req.body.query as string;
 
-  await page.goto("https://httpbin.org/ip");
-  const ipJson = await page.$eval("pre", (el) => el.textContent);
+  // await page.goto("https://httpbin.org/ip");
+  // const ipJson = await page.$eval("pre", (el) => el.textContent);
 
-  if (ipJson) {
-    const { origin: proxyIp } = JSON.parse(ipJson);
-    console.debug("🐞proxyIp");
-    console.debug(proxyIp);
-  } else {
-    console.debug("🐞ipJson == null");
-  }
+  // if (ipJson) {
+  //   const { origin: proxyIp } = JSON.parse(ipJson);
+  //   console.debug("🐞proxyIp");
+  //   console.debug(proxyIp);
+  // } else {
+  //   console.debug("🐞ipJson == null");
+  // }
 
   const resultsString = await performWebSearch(query);
   const foundUrlStr = resultsString
@@ -98,7 +111,7 @@ export default async (req: VercelRequest, res: VercelResponse) => {
   }
   const foundUrlStrFormatted = foundUrlStr.replace("URL: ", "");
 
-  await page2.goto(foundUrlStrFormatted, {
+  await page.goto(foundUrlStrFormatted, {
     waitUntil: "load",
   });
   console.debug("🐞2");
@@ -109,7 +122,7 @@ export default async (req: VercelRequest, res: VercelResponse) => {
 
   console.debug("🐞3");
 
-  const bodyInnerHTML = await page2.$eval("body", (e) => {
+  const bodyInnerHTML = await page.$eval("body", (e) => {
     return e.innerHTML;
   });
 

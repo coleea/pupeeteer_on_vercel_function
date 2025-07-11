@@ -33,8 +33,6 @@ require("puppeteer-extra-plugin-stealth/evasions/defaultArgs");
 require("puppeteer-extra-plugin-user-preferences");
 require("puppeteer-extra-plugin-user-data-dir");
 
-const SBR_WS_ENDPOINT =
-  "wss://brd-customer-hl_29ef282b-zone-scraping_browser1:uow2t82dtevb@brd.superproxy.io:9222";
 
 export async function getChrome({ isDev }: { isDev: boolean }) {
   //   console.debug("🐞process.env.VERCEL_ENV");
@@ -53,11 +51,10 @@ export async function getChrome({ isDev }: { isDev: boolean }) {
   const executablePath = isDev
     ? puppeteer.executablePath()
     : await chromium.executablePath();
-  const pptr = isDev ? puppeteerExtra : puppeteerExtra;
-  // pptr.connect({ 
-    // browserWSEndpoint: SBR_WS_ENDPOINT
-  //  });
 
+  const pptr = isDev ? puppeteerExtra : puppeteerExtra;
+
+  
   return {
     executablePath: executablePath, // puppeteer가 번들로 제공하는 Chromium 경로
     puppeteer: pptr,
