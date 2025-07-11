@@ -9,7 +9,7 @@ import { argsBySparticuz } from "../utils/argsBySparticuz";
 
 // import { getChrome } from "../utils/getChrome.backup.2";
 
-const BRAVE_API_KEY = "BSAfF9d5o5VYSiYDsTjIiKoLfogH9cq"
+const BRAVE_API_KEY = "BSAfF9d5o5VYSiYDsTjIiKoLfogH9cq";
 
 export default async (req: VercelRequest, res: VercelResponse) => {
   const { body, method } = req;
@@ -41,6 +41,7 @@ export default async (req: VercelRequest, res: VercelResponse) => {
 
   // });
 
+  // puppeteer
   const browser = await puppeteer.launch(
     isDev
       ? {
@@ -60,7 +61,7 @@ export default async (req: VercelRequest, res: VercelResponse) => {
         }
   );
 
-  const page2 = await browser.newPage()
+  const page2 = await browser.newPage();
   // const { page } = browser;
   const page = (await browser.pages()).at(0)!;
 
@@ -73,166 +74,179 @@ export default async (req: VercelRequest, res: VercelResponse) => {
   await page.setJavaScriptEnabled(true);
   // await page.setViewport({ width: 600, height: 600 });
 
-  
-
   // https://www.google.com/search?q=site%3Anamu.wiki&newwindow=1
   const query = req.body.query as string;
 
-   const resultsString = await performWebSearch(query)
-   const foundUrlStr = resultsString.split('\n').find(line => line.startsWith("URL: "))
-   if(foundUrlStr == null ) {
+  await page.goto("https://httpbin.org/ip");
+  const ipJson = await page.$eval("pre", (el) => el.textContent);
+
+  if (ipJson) {
+    const { origin: proxyIp } = JSON.parse(ipJson);
+    console.debug("🐞proxyIp");
+    console.debug(proxyIp);
+  } else {
+    console.debug("🐞ipJson == null");
+  }
+
+  const resultsString = await performWebSearch(query);
+  const foundUrlStr = resultsString
+    .split("\n")
+    .find((line) => line.startsWith("URL: "));
+  if (foundUrlStr == null) {
     setHeaderForPostRequest(res);
-  res.end("foundUrlStr == null")
-    return 
-   }
-const foundUrlStrFormatted = foundUrlStr.replace('URL: ', '')
+    res.end("foundUrlStr == null");
+    return;
+  }
+  const foundUrlStrFormatted = foundUrlStr.replace("URL: ", "");
 
-
-await page2.goto(foundUrlStrFormatted, {
+  await page2.goto(foundUrlStrFormatted, {
     waitUntil: "load",
   });
-  console.debug('🐞2');
+  console.debug("🐞2");
 
   // await new Promise((r) => setTimeout(r, 3000));
 
   // await new Promise((r) => setTimeout(r, 3000));
 
-  console.debug('🐞3');
+  console.debug("🐞3");
 
   const bodyInnerHTML = await page2.$eval("body", (e) => {
     return e.innerHTML;
   });
 
-  console.debug('🐞4');
+  console.debug("🐞4");
 
   // await new Promise((r) => setTimeout(r, 1000));
 
   // console.debug("🐞bodyInnerHTML");
   // console.debug(bodyInnerHTML);
 
-  
   await page.close();
   await browser.close();
 
   // await new Promise((r) => setTimeout(r, 1000));
 
   setHeaderForPostRequest(res);
-  res.end(bodyInnerHTML)
+  res.end(bodyInnerHTML);
 
+  // console.debug('🐞resultsString');
+  // console.debug(resultsString);
 
-// console.debug('🐞resultsString');
-// console.debug(resultsString);
+  //   const url = `${encodeURI(
+  //     // "https://duckduckgo.com/?q=site%3Anamu.wiki+"
+  //     // "https://www.google.com/search?q=site:namu.wiki+"
+  //     "https://www.bing.com/search?q=site:namu.wiki "
+  //   )}${encodeURI(query)}`;
 
-//   const url = `${encodeURI(
-//     // "https://duckduckgo.com/?q=site%3Anamu.wiki+"
-//     // "https://www.google.com/search?q=site:namu.wiki+"
-//     "https://www.bing.com/search?q=site:namu.wiki "
-//   )}${encodeURI(query)}`;
+  //   console.debug("🐞url");
+  //   console.debug(url);
 
-//   console.debug("🐞url");
-//   console.debug(url);
+  //   // await new Promise((r) => setTimeout(r, 2000));
 
-//   // await new Promise((r) => setTimeout(r, 2000));
+  //   // new Error('Navigating frame was detached'),
+  //   await page.goto(url, {
+  //     waitUntil: "domcontentloaded",
+  //     // waitUntil: "",
+  //   });
 
-//   // new Error('Navigating frame was detached'),
-//   await page.goto(url, {
-//     waitUntil: "domcontentloaded",
-//     // waitUntil: "",
-//   });
+  //   // await new Promise((r) => setTimeout(r, 500000));
 
-//   // await new Promise((r) => setTimeout(r, 500000));
+  //   // await page.$eval()
+  //   // console.debug("🐞before eval");
+  //   // const bodyInnerHTMLGoogle = await page.$eval("body", (e) => {
+  //   //   return e.innerHTML;
+  //   // });
+  //   // console.debug("🐞after eval");
 
-//   // await page.$eval()
-//   // console.debug("🐞before eval");
-//   // const bodyInnerHTMLGoogle = await page.$eval("body", (e) => {
-//   //   return e.innerHTML;
-//   // });
-//   // console.debug("🐞after eval");
+  //   // console.debug("🐞bodyInnerHTMLGoogle");
+  //   // console.debug(bodyInnerHTMLGoogle);
 
-//   // console.debug("🐞bodyInnerHTMLGoogle");
-//   // console.debug(bodyInnerHTMLGoogle);
+  //   const targetUrl = await page.$eval(
+  //     // "#search a"
+  //     "h2 a",
+  //     // ".react-results--main li article h2 a",
+  //     (e) => {
+  //       return e.href;
+  //     }
+  //   );
 
-//   const targetUrl = await page.$eval(
-//     // "#search a"
-//     "h2 a",
-//     // ".react-results--main li article h2 a",
-//     (e) => {
-//       return e.href;
-//     }
-//   );
+  //   // await new Promise((r) => setTimeout(r, 2000));
 
-//   // await new Promise((r) => setTimeout(r, 2000));
+  //   console.debug('🐞targetUrl');
+  //   console.debug(targetUrl);
+  //   console.debug('🐞1');
+  //   await page2.goto(targetUrl, {
+  //     waitUntil: "load",
+  //   });
+  //   console.debug('🐞2');
 
-//   console.debug('🐞targetUrl');
-//   console.debug(targetUrl);
-//   console.debug('🐞1');
-//   await page2.goto(targetUrl, {
-//     waitUntil: "load",
-//   });
-//   console.debug('🐞2');
+  //   // await new Promise((r) => setTimeout(r, 3000));
 
-//   // await new Promise((r) => setTimeout(r, 3000));
+  //   // await new Promise((r) => setTimeout(r, 3000));
 
-//   // await new Promise((r) => setTimeout(r, 3000));
+  //   console.debug('🐞3');
 
-//   console.debug('🐞3');
+  //   const bodyInnerHTML = await page2.$eval("body", (e) => {
+  //     return e.innerHTML;
+  //   });
 
-//   const bodyInnerHTML = await page2.$eval("body", (e) => {
-//     return e.innerHTML;
-//   });
+  //   console.debug('🐞4');
 
-//   console.debug('🐞4');
+  //   // await new Promise((r) => setTimeout(r, 1000));
 
-//   // await new Promise((r) => setTimeout(r, 1000));
+  //   // console.debug("🐞bodyInnerHTML");
+  //   // console.debug(bodyInnerHTML);
 
-//   // console.debug("🐞bodyInnerHTML");
-//   // console.debug(bodyInnerHTML);
+  //   await page.close();
+  //   await browser.close();
 
-  
-//   await page.close();
-//   await browser.close();
+  //   // await new Promise((r) => setTimeout(r, 1000));
 
-//   // await new Promise((r) => setTimeout(r, 1000));
-
-//   setHeaderForPostRequest(res);
-//   res.end(bodyInnerHTML);
+  //   setHeaderForPostRequest(res);
+  //   res.end(bodyInnerHTML);
 };
 
-
-
-
-
-async function performWebSearch(query: string, count: number = 10, offset: number = 0) {
+async function performWebSearch(
+  query: string,
+  count: number = 10,
+  offset: number = 0
+) {
   // checkRateLimit();
-  const url = new URL('https://api.search.brave.com/res/v1/web/search');
-  url.searchParams.set('q', query);
-  url.searchParams.set('count', count.toString()); // API limit
-  url.searchParams.set('offset', offset.toString());
+  const url = new URL("https://api.search.brave.com/res/v1/web/search");
+  url.searchParams.set("q", query);
+  url.searchParams.set("count", count.toString()); // API limit
+  url.searchParams.set("offset", offset.toString());
 
   const response = await fetch(url, {
     headers: {
-      'Accept': 'application/json',
-      'Accept-Encoding': 'gzip',
-      'X-Subscription-Token': BRAVE_API_KEY
-    }
+      Accept: "application/json",
+      "Accept-Encoding": "gzip",
+      "X-Subscription-Token": BRAVE_API_KEY,
+    },
   });
 
   if (!response.ok) {
-    throw new Error(`Brave API error: ${response.status} ${response.statusText}\n${await response.text()}`);
+    throw new Error(
+      `Brave API error: ${response.status} ${
+        response.statusText
+      }\n${await response.text()}`
+    );
   }
 
-  const data = await response.json() as BraveWeb;
+  const data = (await response.json()) as BraveWeb;
 
   // Extract just web results
-  const results = (data.web?.results || []).map(result => ({
-    title: result.title || '',
-    description: result.description || '',
-    url: result.url || ''
+  const results = (data.web?.results || []).map((result) => ({
+    title: result.title || "",
+    description: result.description || "",
+    url: result.url || "",
   }));
 
-  return results.map(r =>
-    `Title: ${r.title}\nDescription: ${r.description}\nURL: ${r.url}`
-  ).join('\n\n');
+  return results
+    .map(
+      (r) => `Title: ${r.title}\nDescription: ${r.description}\nURL: ${r.url}`
+    )
+    .join("\n\n");
 }
 
 // function checkRateLimit() {
@@ -295,5 +309,5 @@ interface BravePoiResponse {
 }
 
 interface BraveDescription {
-  descriptions: {[id: string]: string};
+  descriptions: { [id: string]: string };
 }

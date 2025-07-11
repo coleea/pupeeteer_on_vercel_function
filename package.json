@@ -18,6 +18,7 @@
     "puppeteer-extra-plugin-user-data-dir": "^2.4.1",
     "puppeteer-extra-plugin-user-preferences": "^2.4.1",
     "puppeteer-real-browser": "^1.4.2",
+    "puppeteer-with-fingerprints": "^2.3.2",
     "rebrowser-puppeteer-core": "^24.8.1"
   },
   "devDependencies": {

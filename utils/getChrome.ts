@@ -1,4 +1,5 @@
 // import puppeteerCore from "puppeteer-core";
+import { plugin } from "puppeteer-with-fingerprints";
 import chromium from "@sparticuz/chromium";
 import puppeteer from "puppeteer";
 
@@ -7,7 +8,6 @@ import puppeteerExtraPluginStealth from "puppeteer-extra-plugin-stealth";
 
 // import puppeteerRebrowser from "rebrowser-puppeteer";
 // import puppeteerCoreRebrowser from "rebrowser-puppeteer-core";
-
 
 // import { addExtra } from 'puppeteer-extra'
 // import rebrowserPuppeteer from 'rebrowser-puppeteer-core'
@@ -33,9 +33,18 @@ require("puppeteer-extra-plugin-stealth/evasions/defaultArgs");
 require("puppeteer-extra-plugin-user-preferences");
 require("puppeteer-extra-plugin-user-data-dir");
 
+const SBR_WS_ENDPOINT =
+  "wss://brd-customer-hl_29ef282b-zone-scraping_browser1:uow2t82dtevb@brd.superproxy.io:9222";
+
 export async function getChrome({ isDev }: { isDev: boolean }) {
   //   console.debug("🐞process.env.VERCEL_ENV");
   //   console.debug(process.env.VERCEL_ENV);
+
+  // plugin.setServiceKey("");
+  // const fingerprint = await plugin.fetch({
+  //   tags: ["Microsoft Windows", "Chrome"],
+  // });
+  // plugin.useFingerprint(fingerprint);
 
   puppeteerExtra.use(puppeteerExtraPluginStealth());
 
@@ -45,10 +54,12 @@ export async function getChrome({ isDev }: { isDev: boolean }) {
     ? puppeteer.executablePath()
     : await chromium.executablePath();
   const pptr = isDev ? puppeteerExtra : puppeteerExtra;
-
+  pptr.connect({ browserWSEndpoint: SBR_WS_ENDPOINT });
+  
   return {
     executablePath: executablePath, // puppeteer가 번들로 제공하는 Chromium 경로
     puppeteer: pptr,
+    // puppeteer: plugin,
     //   puppeteer: puppeteer, // 풀 버전 puppeteer 사용
   };
 
