@@ -63,9 +63,10 @@ export const businessLogic = async ({
     // const bodyInnerHTML = await page.$eval("body", (e) => {
     //   return e.innerHTML;
     // });
-	
+
 	// 나무위키 contents
-    const bodyInnerText = await page.$eval("#app > div > div:nth-child(2) > div > div:nth-child(2)", (e) => {
+	// > div:nth-child(2) > div > div:nth-child(2)
+    const bodyInnerText = await page.$eval("body ", (e) => {
 		// 광고제거
       document.querySelector(`[style="margin 0; color: #8d4298cd"]`)?.remove();
       return e.innerText;
