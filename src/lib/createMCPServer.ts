@@ -5,8 +5,6 @@ import {
 } from "@modelcontextprotocol/sdk/types.js";
 
 import { SERVER_TOOL_NAME, wikiTool } from "../constant";
-import { performWebSearch } from "./performWebSearch";
-import { getChrome } from "../../utils/getChrome";
 import { businessLogic } from "./businessLogic";
 
 export const SBR_WS_ENDPOINT =
@@ -32,32 +30,21 @@ export function createMCPServer() {
     }
   );
 
-  // setupTools(mcpServer);
   return mcpServer;
 }
 
 export function setupTools(server: Server) {
   server.setRequestHandler(ListToolsRequestSchema, async () => {
     return {
-      tools: [
-        // braveSearchTool
-        wikiTool,
-      ],
+      tools: [wikiTool],
     };
   });
 
   // handle tool calls
   server.setRequestHandler(CallToolRequestSchema, async (request, extra) => {
-    console.debug("🐞setRequestHandler");
     const args = request.params.arguments;
-    console.debug("🐞args");
-    console.debug(args);
-    console.debug("🐞request.params");
-    console.debug(request.params);
+
     const toolName = request.params.name;
-    console.debug("🐞toolName");
-    console.debug(toolName);
-    console.log("Received request for tool with argument:", toolName, args);
 
     if (!args) {
       throw new Error("arguments undefined");
@@ -66,9 +53,6 @@ export function setupTools(server: Server) {
     if (!toolName) {
       throw new Error("tool name undefined");
     }
-
-    console.debug("🐞SERVER_TOOL_NAME");
-    console.debug(SERVER_TOOL_NAME);
 
     if (toolName === SERVER_TOOL_NAME) {
       const { query, site } = args;
@@ -81,17 +65,10 @@ export function setupTools(server: Server) {
       }
 
       try {
-        const response = await businessLogic(
-          {
-            query,
-            site,
-          }
-          // count as number,
-          // offset as number
-        );
-
-        console.debug("🐞searchResult");
-        console.debug(response);
+        const response = await businessLogic({
+          query,
+          site,
+        });
 
         return {
           content: [

@@ -1,11 +1,11 @@
 import { BRAVE_API_KEY } from "../constant";
 import { checkRateLimit } from "./checkRateLimit";
 
-export async function performWebSearch(query: string, count = 10, offset = 0) : Promise<string> {
-  console.debug("🐞in performWebSearch");
-
-  console.debug("🐞query");
-  console.debug(query);
+export async function performWebSearch(
+  query: string,
+  count = 10,
+  offset = 0
+): Promise<string> {
   checkRateLimit();
 
   const url = new URL("https://api.search.brave.com/res/v1/web/search");
@@ -31,9 +31,6 @@ export async function performWebSearch(query: string, count = 10, offset = 0) : 
 
   const searchResult = await response.json();
 
-  console.debug("🐞searchResult");
-  console.debug(searchResult);
-
   // Extract just web results
   const resultsFormatted = (searchResult.web?.results || []).map(
     (result: any) => ({
@@ -42,9 +39,6 @@ export async function performWebSearch(query: string, count = 10, offset = 0) : 
       url: result.url || "",
     })
   );
-
-  console.debug("🐞resultsFormatted");
-  console.debug(resultsFormatted);
 
   return resultsFormatted
     .map(

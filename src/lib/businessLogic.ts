@@ -9,23 +9,14 @@ export const businessLogic = async ({
   query: string;
   site: string;
 }) => {
-  console.debug("🐞3.5");
-
   const isDev = process.env.VERCEL_REGION?.includes("dev") ? true : false;
-
-  console.debug("🐞4");
-
-  console.debug("🐞isDev");
-  console.debug(isDev);
 
   try {
     const { executablePath, puppeteer } = await getChrome({ isDev });
-    console.debug("🐞5");
 
     const browser = await puppeteer.connect({
       browserWSEndpoint: SBR_WS_ENDPOINT,
     });
-    console.debug("🐞6");
 
     const page = await browser.newPage();
 
@@ -37,49 +28,31 @@ export const businessLogic = async ({
 
     await page.setJavaScriptEnabled(true);
 
-    // const query = req.body.query as string;
-    console.debug("🐞7");
-
     const resultsString = await performWebSearch(query);
     const foundUrlStr = resultsString
       .split("\n")
       .find((line) => line.startsWith("URL: "));
 
     if (foundUrlStr == null) {
-      // setHeaderForPostRequest(res);
-      // res.end("foundUrlStr == null");
       return "foundUrlStr == null";
     }
-
-    console.debug("🐞8");
 
     const foundUrlStrFormatted = foundUrlStr.replace("URL: ", "");
 
     await page.goto(foundUrlStrFormatted, {
       waitUntil: "load",
     });
-    console.debug("🐞9");
 
-    // const bodyInnerHTML = await page.$eval("body", (e) => {
-    //   return e.innerHTML;
-    // });
-
-	// 나무위키 contents
-	// > div:nth-child(2) > div > div:nth-child(2)
     const bodyInnerText = await page.$eval("body ", (e) => {
-		// 광고제거
+      // 광고제거
       document.querySelector(`[style="margin 0; color: #8d4298cd"]`)?.remove();
       return e.innerText;
     });
-    console.debug("🐞10");
 
     await page.close();
     await browser.close();
-    console.debug("🐞11");
 
     return bodyInnerText;
-    // setHeaderForPostRequest(res);
-    // res.end(bodyInnerHTML);
   } catch (error) {
     return JSON.stringify(error);
   }
