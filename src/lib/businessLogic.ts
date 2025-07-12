@@ -60,8 +60,15 @@ export const businessLogic = async ({
     });
     console.debug("🐞9");
 
-    const bodyInnerHTML = await page.$eval("body", (e) => {
-      return e.innerHTML;
+    // const bodyInnerHTML = await page.$eval("body", (e) => {
+    //   return e.innerHTML;
+    // });
+	
+	// 나무위키 contents
+    const bodyInnerText = await page.$eval("#app > div > div:nth-child(2) > div > div:nth-child(2)", (e) => {
+		// 광고제거
+      document.querySelector(`[style="margin 0; color: #8d4298cd"]`)?.remove();
+      return e.innerText;
     });
     console.debug("🐞10");
 
@@ -69,7 +76,7 @@ export const businessLogic = async ({
     await browser.close();
     console.debug("🐞11");
 
-    return bodyInnerHTML;
+    return bodyInnerText;
     // setHeaderForPostRequest(res);
     // res.end(bodyInnerHTML);
   } catch (error) {
