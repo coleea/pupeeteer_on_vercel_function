@@ -1,5 +1,5 @@
-import { BRAVE_API_KEY } from "../constant.js";
-import { checkRateLimit } from "./checkRateLimit.js";
+import { BRAVE_API_KEY } from "../constant";
+import { checkRateLimit } from "./checkRateLimit";
 
 export async function performWebSearch(query: string, count = 10, offset = 0) : Promise<string> {
   console.debug("🐞in performWebSearch");

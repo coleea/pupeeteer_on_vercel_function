@@ -1,15 +1,17 @@
 import { StreamableHTTPServerTransport } from "@modelcontextprotocol/sdk/server/streamableHttp.js";
 import { VercelRequest, VercelResponse } from "@vercel/node";
-import { BRAVE_API_KEY, SESSION_ID_HEADER_NAME } from "../src/constant.js";
+// import { BRAVE_API_KEY, SESSION_ID_HEADER_NAME } from "../src/constant.js";
 import {
   createMCPServer as createMCPServerWithBusinessLogic,
   SBR_WS_ENDPOINT,
-} from "../src/lib/createMCPServer.js";
-import { setHeaderForPostRequest } from "../utils/setHeaderForPostRequest.js";
-import { setHeaderForGetRequest } from "../utils/setHeaderForGetRequest.js";
-import { getChrome } from "../utils/getChrome.js";
-import { BraveWeb } from "../types/type.js";
+  setupTools,
+} from "../src/lib/createMCPServer";
+// import { setHeaderForPostRequest } from "../utils/setHeaderForPostRequest.js";
+// import { setHeaderForGetRequest } from "../utils/setHeaderForGetRequest.js";
+// import { getChrome } from "../utils/getChrome.js";
+// import { BraveWeb } from "../types/type.js";
 import "dotenv/config";
+import { BRAVE_API_KEY } from "../src/constant";
 
 // const BRAVE_API_KEY = "BSAfF9d5o5VYSiYDsTjIiKoLfogH9cq";
 
@@ -98,16 +100,27 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   try {
     const mcpServer = createMCPServerWithBusinessLogic();
 
+      setupTools(mcpServer);
+    
+    console.debug('🐞11');
+    console.debug(11);
     const transport = new StreamableHTTPServerTransport({
       sessionIdGenerator: undefined,
     });
+    console.debug('🐞22');
+
 
     await mcpServer.connect(transport);
+    console.debug('🐞33');
 
     // const transport = await connectWithTransport({ sessionId, mcpServer });
 
+    console.debug('🐞reqBody');
+    console.debug(reqBody);
+    
     // transport 내부에서 클라이언트에게 response 하므로 이후에 로직 처리는 필요하지 않음
     await transport.handleRequest(req, res, reqBody);
+    console.debug('🐞44');
 
     return;
   } catch (error) {

@@ -1,4 +1,4 @@
-import { RATE_LIMIT, requestCount } from "../constant.js";
+import { RATE_LIMIT, requestCount } from "../constant";
 
 export function checkRateLimit() { 
   const now = Date.now();

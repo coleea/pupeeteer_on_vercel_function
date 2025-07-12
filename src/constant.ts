@@ -1,5 +1,5 @@
 import { StreamableHTTPServerTransport } from "@modelcontextprotocol/sdk/server/streamableHttp.js";
-import { Tool } from "@modelcontextprotocol/sdk/types.js";
+import { Tool } from "@modelcontextprotocol/sdk/types";
 import dotenv from "dotenv";
 dotenv.config();
 
@@ -25,31 +25,54 @@ export let requestCount = {
   lastReset: Date.now(),
 };
 
-export const braveSearchTool: Tool = {
+export const wikiTool: Tool = {
   name: SERVER_TOOL_NAME,
   description:
-    "Performs a web search using the Brave Search API, ideal for general queries, news, articles, and online content. " +
-    "Use this for broad information gathering, recent events, or when you need diverse web sources. " +
-    "Supports pagination, content filtering, and freshness controls. " +
-    "Maximum 20 results per request, with offset for pagination. ",
+    "searching for information using https://wikipedia.org/  or https://namu.wiki namu.wiki has a lot of Korean data. " +
+    "wikipedia has all the data in the world. Korean data search for Namu.wiki first",
   inputSchema: {
     type: "object",
     properties: {
       query: {
         type: "string",
-        description: "Search query (max 400 chars, 50 words)",
+        description: "there are only two sites. namuwiki and wikipedia",
+        default: "namuwiki",
+
       },
-      count: {
-        type: "number",
+      site: {
+        type: "string",
         description: "Number of results (1-20, default 10)",
-        default: 10,
-      },
-      offset: {
-        type: "number",
-        description: "Pagination offset (max 9, default 0)",
-        default: 0,
       },
     },
-    required: ["query"],
+    required: ["site", "query"],
   },
 };
+
+// export const braveSearchTool: Tool = {
+//   name: SERVER_TOOL_NAME,
+//   description:
+//     "Performs a web search using the Brave Search API, ideal for general queries, news, articles, and online content. " +
+//     "Use this for broad information gathering, recent events, or when you need diverse web sources. " +
+//     "Supports pagination, content filtering, and freshness controls. " +
+//     "Maximum 20 results per request, with offset for pagination. ",
+//   inputSchema: {
+//     type: "object",
+//     properties: {
+//       query: {
+//         type: "string",
+//         description: "Search query (max 400 chars, 50 words)",
+//       },
+//       count: {
+//         type: "number",
+//         description: "Number of results (1-20, default 10)",
+//         default: 10,
+//       },
+//       offset: {
+//         type: "number",
+//         description: "Pagination offset (max 9, default 0)",
+//         default: 0,
+//       },
+//     },
+//     required: ["query"],
+//   },
+// };
